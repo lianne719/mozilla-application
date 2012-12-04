@@ -1,4 +1,4 @@
-*tracking-firefox17+.py*
+tracking-firefox17+.py
 
 A python script that gets the buglist of all bugs fixed between 10-09-2012 and 11-19-2012 that were marked as tracking-firefox17+ at some point in that 6 week time. More details on `Mozilla's GNOME Women's Outreach Program 2013`_
 .. _Mozilla's GNOME Women's Outreach Program 2013: https://wiki.mozilla.org/GNOME_Outreach_Winter2013
