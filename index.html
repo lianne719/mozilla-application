@@ -9,6 +9,209 @@
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
     <title>Mozilla-application</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <link rel="stylesheet" href="style.css" type="text/css">
+        <script src="amcharts/amcharts.js" type="text/javascript"></script>        
+        <script type="text/javascript">
+            var chart1;
+            var chart2;
+            var chartData = [];
+            
+            // this method called after all page contents are loaded
+	        window.onload = function() {
+		        loadCSV("results.txt");
+		        createchart1();
+		        
+		        createchart2();
+	        }
+            
+            function loadCSV(file) {
+		        if (window.XMLHttpRequest) {
+			        // IE7+, Firefox, Chrome, Opera, Safari
+			        var request = new XMLHttpRequest();
+		        } else {
+			        // code for IE6, IE5
+			        var request = new ActiveXObject('Microsoft.XMLHTTP');
+		        }
+
+		        // load
+		        request.open('GET', file, false);
+		        request.send();
+		        parseCSV(request.responseText);
+	        }
+            
+            function parseCSV(data) {
+		        //replace UNIX new lines
+		        data = data.replace(/\r\n/g, "\n");
+		        //replace MAC new lines
+		        data = data.replace(/\r/g, "\n");
+		        //split into rows
+		        var rows = data.split("\n");
+		
+		        for (var i = 0; i < rows.length; i++) {
+			        // this line helps to skip empty rows
+			        if (i > 0 && rows[i]) {
+				        // our columns are separated by comma
+				        var column = rows[i].split(",");
+				        var date = new Date(column[0]);
+				        date.setHours(0, 0, 0, 0);
+				        var added = column[1];
+				        var removed = -column[2];
+				        var remaining = column[4];
+				
+				        chartData.push({
+					        date     : date,
+					        added    : added,
+					        removed  : removed,
+					        remaining: remaining,
+				        });
+			        }
+		        }
+	        }
+            
+            function createchart1() {
+                // SERIAL chart1
+                chart1 = new AmCharts.AmSerialChart();
+                chart1.pathToImages = "amcharts/images/";
+                chart1.zoomOutButton = {
+                    backgroundColor: '#000000',
+                    backgroundAlpha: 0.15
+                };
+                chart1.dataProvider = chartData;
+                chart1.categoryField = "date";
+                
+                // listen for "dataUpdated" event (fired when chart1 is inited) and call zoomchart1 method when it happens
+                chart1.addListener("dataUpdated", zoomchart1);
+
+                // AXES
+                // category                
+                var categoryAxis = chart1.categoryAxis;
+                categoryAxis.parseDates = true; // as our data is date-based, we set parseDates to true
+                categoryAxis.minPeriod = "DD"; // our data is daily, so we set minPeriod to DD
+                categoryAxis.dashLength = 2;
+                categoryAxis.gridAlpha = 0.15;
+                categoryAxis.axisColor = "#DADADA";
+
+                // first value axis (on the left)
+                /*var valueAxis1 = new AmCharts.ValueAxis();
+                valueAxis1.axisColor = "#B0DE09";
+                valueAxis1.axisThickness = 2;
+                valueAxis1.gridAlpha = 0;
+                chart1.addValueAxis(valueAxis1);*/
+
+                // GRAPHS
+                // first graph
+                var graph1 = new AmCharts.AmGraph();
+                //graph1.valueAxis = valueAxis1; // we have to indicate which value axis should be used
+                graph1.title = "added";
+                graph1.valueField = "added";
+                graph1.lineColor = "#B0DE09";
+                graph1.bullet = "round";
+                graph1.hideBulletsCount = 30;
+                chart1.addGraph(graph1);
+
+                // second graph                
+                var graph2 = new AmCharts.AmGraph();
+                //graph2.valueAxis = valueAxis1; // we have to indicate which value axis should be used
+                graph2.title = "removed";
+                graph2.valueField = "removed";
+                graph2.lineColor = "#EB1C24";
+                graph2.bullet = "square";
+                graph2.hideBulletsCount = 30;
+                chart1.addGraph(graph2);
+
+                // CURSOR
+                var chartCursor = new AmCharts.ChartCursor();
+                chartCursor.cursorPosition = "mouse";
+                chart1.addChartCursor(chartCursor);
+
+                // SCROLLBAR
+                var chartScrollbar = new AmCharts.ChartScrollbar();
+                chart1.addChartScrollbar(chartScrollbar);
+
+                // LEGEND
+                var legend = new AmCharts.AmLegend();
+                legend.marginLeft = 110;
+                chart1.addLegend(legend);
+
+                // WRITE
+                chart1.write("chart1div");
+            }
+            
+            // this method is called when chart1 is first inited as we listen for "dataUpdated" event
+            function zoomchart1() {
+                // different zoom methods can be used - zoomToIndexes, zoomToDates, zoomToCategoryValues
+                chart1.zoomToIndexes(10, 20);
+            }
+            
+            function createchart2() {
+                // SERIAL chart2
+                chart2 = new AmCharts.AmSerialChart();
+                
+                chart2.pathToImages = "amcharts/images/";
+                chart2.zoomOutButton = {
+                    backgroundColor: '#000000',
+                    backgroundAlpha: 0.15
+                };
+                chart2.dataProvider = chartData;
+                chart2.categoryField = "date";
+                
+                // listen for "dataUpdated" event (fired when chart2 is inited) and call zoomchart2 method when it happens
+                chart2.addListener("dataUpdated", zoomchart2);
+
+                // AXES
+                // category                
+                var categoryAxis = chart2.categoryAxis;
+                categoryAxis.parseDates = true; // as our data is date-based, we set parseDates to true
+                categoryAxis.minPeriod = "DD"; // our data is daily, so we set minPeriod to DD
+                categoryAxis.dashLength = 2;
+                categoryAxis.gridAlpha = 0.15;
+                categoryAxis.axisColor = "#DADADA";
+
+                // first value axis (on the left)
+                var valueAxis1 = new AmCharts.ValueAxis();
+                valueAxis1.axisColor = "#4000FF";
+                valueAxis1.axisThickness = 2;
+                valueAxis1.gridAlpha = 0;
+                chart2.addValueAxis(valueAxis1);
+
+                // GRAPHS
+                // third graph
+                var graph3 = new AmCharts.AmGraph();
+                graph3.valueAxis = valueAxis1; // we have to indicate which value axis should be used
+                graph3.type = "column";
+                graph3.valueField = "remaining";
+                graph3.title = "open bugs left";
+                graph3.lineColor = "#9DF8FF";
+                graph3.lineAlpha = 0;
+                graph3.fillAlphas = 1;
+                chart2.addGraph(graph3);
+
+                // CURSOR
+                var chartCursor = new AmCharts.ChartCursor();
+                chartCursor.cursorPosition = "mouse";
+                chart2.addChartCursor(chartCursor);
+
+                // SCROLLBAR
+                var chartScrollbar = new AmCharts.ChartScrollbar();
+                chart2.addChartScrollbar(chartScrollbar);
+
+                // LEGEND
+                var legend = new AmCharts.AmLegend();
+                legend.marginLeft = 110;
+                chart2.addLegend(legend);
+
+                // WRITE
+                chart2.write("chart2div");
+            }
+            
+            // this method is called when chart2 is first inited as we listen for "dataUpdated" event
+            function zoomchart2() {
+                // different zoom methods can be used - zoomToIndexes, zoomToDates, zoomToCategoryValues
+                chart2.zoomToIndexes(10, 20);
+            }
+        </script>
+    
   </head>
 
   <body>
@@ -31,32 +234,18 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-        <h3>Welcome to GitHub Pages.</h3>
+        <h3>What I've got so far...</h3>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+<p>So I think I've managed to get the right numbers, and the results are in the graphs below</p>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
-
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
-
-<h3>Designer Templates</h3>
-
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
-
-<h3>Rather Drive Stick?</h3>
-
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+<div id="chart1div" style="width: 100%; height: 400px;"></div>
+<div id="chart2div" style="width: 100%; height: 400px;"></div>
 
 <h3>Authors and Contributors</h3>
 
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+<p><a href="https://github.com/mozilla/bztools" class="user-mention">@bztools</a> to access Bugzilla's REST API</p>
+<p><a href="http://www.amcharts.com" class="user-mention">@amcharts</a> for visualisation</p>
 
-<h3>Support or Contact</h3>
-
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
       </section>
     </div>
 
