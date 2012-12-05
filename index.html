@@ -236,9 +236,14 @@
       <section id="main_content" class="inner">
         <h3>What I've got so far...</h3>
 
-<p>So I think I've managed to get the right numbers, and the results are in the graphs below</p>
+<p>So I think I've managed to get the right numbers (methinks), and the results are in the graphs below.</p>
+
+<p>The first graph shows the bugs that were added to and removed from tracking-firefox17+ in the 6 week period (click 'show all' to show results for the whole of 6 weeks)</p>
 
 <div id="chart1div" style="width: 100%; height: 400px;"></div>
+
+<p>The second graph shows the daily drop in open bugs in tracking-firefox17+. I minused off bugs that were RESOLVED/VERIFIED/fixed(status-firefox17)/wontfix and added them back if they were REOPENED. Notice how the number of open bugs still do not go down to zero at the end of the period. Although some were closed on 2012-11-19 (PST), they might have been recorded as RESOLVED on the following day (GMT) <a href="https://bugzilla.mozilla.org/show_activity.cgi?id=807915">an example</a>. Either way, the final number of open bugs would not have reached 0 because some of the bugs are still recorded as NEW (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=806346">another example</a>).</p>
+
 <div id="chart2div" style="width: 100%; height: 400px;"></div>
 
 <h3>Authors and Contributors</h3>
